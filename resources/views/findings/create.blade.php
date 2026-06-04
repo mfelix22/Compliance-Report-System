@@ -104,8 +104,8 @@
                             @if (is_array(old('findings.0.custom_items')))
                                 @foreach (old('findings.0.custom_items') as $ci)
                                     <div class="flex items-center gap-2">
-                                        <input type="text" name="findings[0][custom_items][]" value="{{ $ci }}"
-                                            placeholder="Spesifikasikan temuan Lain-lain…"
+                                        <input type="text" name="findings[0][custom_items][]"
+                                            value="{{ $ci }}" placeholder="Spesifikasikan temuan Lain-lain…"
                                             class="flex-1 text-sm border border-red-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-red-400 bg-white">
                                         <button type="button" onclick="this.closest('div').remove()"
                                             class="text-gray-400 hover:text-red-500 text-sm leading-none">&#x2715;</button>
@@ -129,8 +129,8 @@
                             @if (is_array(old('findings.0.custom_items')))
                                 @foreach (old('findings.0.custom_items') as $ci)
                                     <div class="flex items-center gap-2">
-                                        <input type="text" name="findings[0][custom_items][]" value="{{ $ci }}"
-                                            placeholder="Tulis item temuan…"
+                                        <input type="text" name="findings[0][custom_items][]"
+                                            value="{{ $ci }}" placeholder="Tulis item temuan…"
                                             class="flex-1 text-sm border border-red-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-red-400 bg-white">
                                         <button type="button" onclick="this.closest('div').remove()"
                                             class="text-gray-400 hover:text-red-500 text-sm leading-none">&#x2715;</button>
@@ -171,7 +171,8 @@
                             class="flex items-center gap-2 p-2.5 rounded-lg border border-gray-200
                               cursor-pointer hover:bg-gray-50 has-[:checked]:border-red-500 has-[:checked]:bg-red-50">
                             <input type="radio" name="findings[0][root_cause]" value="{{ $val }}"
-                                {{ old('findings.0.root_cause') === $val ? 'checked' : '' }} class="text-red-600 focus:ring-red-500">
+                                {{ old('findings.0.root_cause') === $val ? 'checked' : '' }}
+                                class="text-red-600 focus:ring-red-500">
                             <span class="text-sm text-gray-700">{{ $lbl }}</span>
                         </label>
                     @endforeach
@@ -187,7 +188,8 @@
                     class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400">
                     <option value="">Pilih departemen…</option>
                     @foreach ($departments as $dept)
-                        <option value="{{ $dept->id }}" {{ old('findings.0.department_id') == $dept->id ? 'selected' : '' }}>
+                        <option value="{{ $dept->id }}"
+                            {{ old('findings.0.department_id') == $dept->id ? 'selected' : '' }}>
                             {{ $dept->name }}
                         </option>
                     @endforeach
