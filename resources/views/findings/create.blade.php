@@ -152,11 +152,9 @@
             {{-- Description --}}
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-1">
-                    Deskripsi
-                    <span class="font-normal text-gray-400 text-xs">(wajib jika tidak ada item yang
-                        dipilih/ditambahkan)</span>
+                    Deskripsi <span class="text-red-500">*</span>
                 </label>
-                <textarea name="findings[0][description]" rows="3" placeholder="Jelaskan temuan secara spesifik…"
+                <textarea name="findings[0][description]" rows="3" placeholder="Jelaskan temuan secara spesifik…" required
                     class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400">{{ old('findings.0.description') }}</textarea>
             </div>
 

@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('findings', function (Blueprint $table) {
-            $table->text('finding')->nullable()->change();
-        });
+        // Reverted: finding column must remain NOT NULL (description is always required)
+        // This migration is a no-op kept for history
     }
 
     /**
@@ -21,8 +20,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('findings', function (Blueprint $table) {
-            $table->text('finding')->nullable(false)->change();
-        });
+        // no-op
     }
 };

@@ -29,13 +29,15 @@ class FindingController extends Controller
         $request->validate([
             'inspection_policy_id'      => ['required', 'exists:inspection_policies,id'],
             'findings'                  => ['required', 'array', 'min:1'],
-            'findings.*.description'    => ['nullable', 'string', 'max:1000'],
+            'findings.*.description'    => ['required', 'string', 'max:1000'],
             'findings.*.root_cause'     => ['required', 'in:people,facilities,training,others'],
             'findings.*.department_id'  => ['required', 'exists:departments,id'],
             'findings.*.photo'          => ['required', 'image', 'max:5120'],
             'findings.*.keterangan'     => ['nullable', 'string'],
         ], [
             'findings.required'                 => 'Minimal satu temuan harus diisi.',
+            'findings.*.description.required'   => 'Deskripsi wajib diisi.',
+            'findings.*.description.max'        => 'Deskripsi maksimal 1000 karakter.',
             'findings.*.root_cause.required'    => 'Root Cause wajib dipilih.',
             'findings.*.root_cause.in'          => 'Pilihan Root Cause tidak valid.',
             'findings.*.department_id.required' => 'Departemen Responsible wajib dipilih.',
