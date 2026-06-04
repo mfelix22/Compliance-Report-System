@@ -75,10 +75,10 @@
                         $lainLainId = $policy->items->first(fn($i) => strtolower(trim($i->text)) === 'lain-lain')?->id;
                         $showCustomArea =
                             ($lainLainId &&
-                                is_array(old('selected_policy_item_ids')) &&
-                                in_array($lainLainId, old('selected_policy_item_ids'))) ||
-                            (is_array(old('custom_finding_items')) &&
-                                count(array_filter(old('custom_finding_items', []))));
+                                is_array(old('findings.0.selected_item_ids')) &&
+                                in_array($lainLainId, old('findings.0.selected_item_ids'))) ||
+                            (is_array(old('findings.0.custom_items')) &&
+                                count(array_filter(old('findings.0.custom_items', []))));
                     @endphp
                     <div class="space-y-2 mb-2">
                         @foreach ($policy->items as $item)
@@ -87,9 +87,9 @@
                                 class="flex items-start gap-3 p-3 rounded-lg border border-gray-200
                                        cursor-pointer hover:border-red-400 hover:bg-red-50
                                        has-[:checked]:border-red-500 has-[:checked]:bg-red-50">
-                                <input type="checkbox" name="selected_policy_item_ids[]" value="{{ $item->id }}"
+                                <input type="checkbox" name="findings[0][selected_item_ids][]" value="{{ $item->id }}"
                                     @if ($isLainLain) onchange="toggleLainLain(this, 'lainlain-area-create', 'custom-items-create')" @endif
-                                    @if (is_array(old('selected_policy_item_ids')) && in_array($item->id, old('selected_policy_item_ids'))) checked @endif
+                                    @if (is_array(old('findings.0.selected_item_ids')) && in_array($item->id, old('findings.0.selected_item_ids'))) checked @endif
                                     class="mt-0.5 rounded text-red-600 focus:ring-red-500">
                                 <span class="text-sm text-gray-700">{{ $item->text }}</span>
                             </label>
@@ -101,10 +101,10 @@
                         class="{{ $showCustomArea ? '' : 'hidden' }} mb-2 p-3 rounded-lg border border-dashed border-red-300 bg-red-50">
                         <p class="text-sm font-semibold text-red-700 mb-2">Spesifikasikan temuan Lain-lain:</p>
                         <div id="custom-items-create" class="space-y-2 mb-2">
-                            @if (is_array(old('custom_finding_items')))
-                                @foreach (old('custom_finding_items') as $ci)
+                            @if (is_array(old('findings.0.custom_items')))
+                                @foreach (old('findings.0.custom_items') as $ci)
                                     <div class="flex items-center gap-2">
-                                        <input type="text" name="custom_finding_items[]" value="{{ $ci }}"
+                                        <input type="text" name="findings[0][custom_items][]" value="{{ $ci }}"
                                             placeholder="Spesifikasikan temuan Lain-lain…"
                                             class="flex-1 text-sm border border-red-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-red-400 bg-white">
                                         <button type="button" onclick="this.closest('div').remove()"
@@ -126,10 +126,10 @@
                     <div class="mb-2 p-3 rounded-lg border border-dashed border-red-300 bg-red-50">
                         <p class="text-sm font-semibold text-red-700 mb-2">Tambahkan item temuan:</p>
                         <div id="custom-items-create" class="space-y-2 mb-2">
-                            @if (is_array(old('custom_finding_items')))
-                                @foreach (old('custom_finding_items') as $ci)
+                            @if (is_array(old('findings.0.custom_items')))
+                                @foreach (old('findings.0.custom_items') as $ci)
                                     <div class="flex items-center gap-2">
-                                        <input type="text" name="custom_finding_items[]" value="{{ $ci }}"
+                                        <input type="text" name="findings[0][custom_items][]" value="{{ $ci }}"
                                             placeholder="Tulis item temuan…"
                                             class="flex-1 text-sm border border-red-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-red-400 bg-white">
                                         <button type="button" onclick="this.closest('div').remove()"
@@ -156,8 +156,8 @@
                     <span class="font-normal text-gray-400 text-xs">(wajib jika tidak ada item yang
                         dipilih/ditambahkan)</span>
                 </label>
-                <textarea name="finding" rows="3" placeholder="Jelaskan temuan secara spesifik…"
-                    class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400">{{ old('finding') }}</textarea>
+                <textarea name="findings[0][description]" rows="3" placeholder="Jelaskan temuan secara spesifik…"
+                    class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400">{{ old('findings.0.description') }}</textarea>
             </div>
 
             {{-- Root Cause --}}
@@ -170,8 +170,8 @@
                         <label
                             class="flex items-center gap-2 p-2.5 rounded-lg border border-gray-200
                               cursor-pointer hover:bg-gray-50 has-[:checked]:border-red-500 has-[:checked]:bg-red-50">
-                            <input type="radio" name="root_cause" value="{{ $val }}"
-                                {{ old('root_cause') === $val ? 'checked' : '' }} class="text-red-600 focus:ring-red-500">
+                            <input type="radio" name="findings[0][root_cause]" value="{{ $val }}"
+                                {{ old('findings.0.root_cause') === $val ? 'checked' : '' }} class="text-red-600 focus:ring-red-500">
                             <span class="text-sm text-gray-700">{{ $lbl }}</span>
                         </label>
                     @endforeach
@@ -183,11 +183,11 @@
                 <label class="block text-sm font-semibold text-gray-700 mb-1">
                     Departemen Responsible <span class="text-red-500">*</span>
                 </label>
-                <select name="department_id" required
+                <select name="findings[0][department_id]" required
                     class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400">
                     <option value="">Pilih departemen…</option>
                     @foreach ($departments as $dept)
-                        <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                        <option value="{{ $dept->id }}" {{ old('findings.0.department_id') == $dept->id ? 'selected' : '' }}>
                             {{ $dept->name }}
                         </option>
                     @endforeach
@@ -199,7 +199,7 @@
                 <label class="block text-sm font-semibold text-gray-700 mb-1">
                     Documentation (Foto Bukti) <span class="text-red-500">*</span>
                 </label>
-                <input type="file" name="photo" accept="image/*" required
+                <input type="file" name="findings[0][photo]" accept="image/*" required
                     class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2
                           file:mr-3 file:py-1 file:px-3 file:rounded file:border-0
                           file:text-sm file:font-medium file:bg-red-50 file:text-red-700
@@ -210,7 +210,7 @@
             {{-- Notes --}}
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-1">Notes</label>
-                <input type="text" name="keterangan" value="{{ old('keterangan') }}"
+                <input type="text" name="findings[0][keterangan]" value="{{ old('findings.0.keterangan') }}"
                     placeholder="Catatan tambahan (opsional)…"
                     class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400">
             </div>
@@ -234,7 +234,7 @@
             const div = document.createElement('div');
             div.className = 'flex items-center gap-2';
             div.innerHTML = `
-                <input type="text" name="custom_finding_items[]"
+                <input type="text" name="findings[0][custom_items][]"
                        placeholder="Spesifikasikan temuan Lain-lain…"
                        class="flex-1 text-sm border border-red-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-red-400 bg-white">
                 <button type="button" onclick="this.closest('div').remove()"
