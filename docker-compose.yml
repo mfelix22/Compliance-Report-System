@@ -3,6 +3,7 @@ services:
   # ── Application (PHP + Apache) ────────────────────────────────────────────
   app:
     image: ghcr.io/mfelix22/compliance-report-system:${APP_IMAGE_TAG:-latest}
+    pull_policy: always
     container_name: food_control_app
     restart: unless-stopped
     ports:
