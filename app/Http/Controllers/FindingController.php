@@ -27,42 +27,47 @@ class FindingController extends Controller
     public function store(Request $request, Inspection $inspection): RedirectResponse
     {
         $request->validate([
-            'inspection_policy_id'      => ['required', 'exists:inspection_policies,id'],
-            'findings'                  => ['required', 'array', 'min:1'],
-            'findings.*.item_id'        => ['nullable', 'exists:policy_items,id'],
-            'findings.*.item_text'      => ['nullable', 'string', 'max:500'],
-            'findings.*.description'    => ['nullable', 'string', 'max:1000'],
-            'findings.*.root_cause'     => ['required', 'in:people,facilities,training,others'],
-            'findings.*.department_id'  => ['required', 'exists:departments,id'],
-            'findings.*.photo'          => ['required', 'image', 'max:5120'],
-            'findings.*.keterangan'     => ['nullable', 'string'],
+            'inspection_policy_id' => ['required', 'exists:inspection_policies,id'],
+            'finding'              => ['nullable', 'string', 'max:1000'],
+            'root_cause'           => ['required', 'in:people,facilities,training,others'],
+            'department_id'        => ['required', 'exists:departments,id'],
+            'photo'                => ['required', 'image', 'max:5120'],
+            'keterangan'           => ['nullable', 'string'],
+        ], [
+            'root_cause.required'    => 'Root Cause wajib dipilih.',
+            'root_cause.in'          => 'Pilihan Root Cause tidak valid.',
+            'department_id.required' => 'Departemen Responsible wajib dipilih.',
+            'department_id.exists'   => 'Departemen tidak valid.',
+            'photo.required'         => 'Foto bukti wajib diunggah.',
+            'photo.image'            => 'File dokumentasi harus berupa gambar.',
+            'photo.max'              => 'Ukuran foto maksimal 5 MB.',
         ]);
 
         $policy     = InspectionPolicy::find($request->inspection_policy_id);
-        $nextNumber = $inspection->findings()->max('number') ?? 0;
+        $nextNumber = ($inspection->findings()->max('number') ?? 0) + 1;
 
-        foreach ($request->input('findings') as $index => $data) {
-            $nextNumber++;
+        $selectedIds = !empty($request->selected_policy_item_ids)
+            ? array_map('intval', (array) $request->selected_policy_item_ids)
+            : null;
 
-            $selectedIds = !empty($data['item_id']) ? [(int) $data['item_id']] : null;
-            $customItems = !empty(trim($data['item_text'] ?? '')) ? [trim($data['item_text'])] : null;
+        $customItems = array_values(array_filter($request->custom_finding_items ?? []));
+        $customItems = !empty($customItems) ? $customItems : null;
 
-            Finding::create([
-                'inspection_id'            => $inspection->id,
-                'inspection_policy_id'     => $request->inspection_policy_id,
-                'number'                   => $nextNumber,
-                'selected_policy_item_ids' => $selectedIds,
-                'custom_finding_items'     => $customItems,
-                'finding'                  => $data['description'] ?? null,
-                'root_cause'               => $data['root_cause'],
-                'department_id'            => (int) $data['department_id'],
-                'photo'                    => $request->file("findings.{$index}.photo")->store('findings', 'public'),
-                'keterangan'               => $data['keterangan'] ?? null,
-                'due_date'                 => $inspection->inspection_date->addDays($policy->due_date_offset_days),
-                'status'                   => 'open',
-                'verification_status'      => 'pending',
-            ]);
-        }
+        Finding::create([
+            'inspection_id'            => $inspection->id,
+            'inspection_policy_id'     => $request->inspection_policy_id,
+            'number'                   => $nextNumber,
+            'selected_policy_item_ids' => $selectedIds,
+            'custom_finding_items'     => $customItems,
+            'finding'                  => $request->finding,
+            'root_cause'               => $request->root_cause,
+            'department_id'            => (int) $request->department_id,
+            'photo'                    => $request->file('photo')->store('findings', 'public'),
+            'keterangan'               => $request->keterangan,
+            'due_date'                 => $inspection->inspection_date->addDays($policy->due_date_offset_days),
+            'status'                   => 'open',
+            'verification_status'      => 'pending',
+        ]);
 
         // Mark this category as NC
         InspectionCategoryStatus::updateOrCreate(
@@ -70,9 +75,8 @@ class FindingController extends Controller
             ['status' => 'NC']
         );
 
-        $count = count($request->input('findings'));
         return redirect()->route('inspections.show', $inspection)
-            ->with('success', $count === 1 ? 'Temuan berhasil disimpan.' : "{$count} temuan berhasil disimpan.");
+            ->with('success', 'Temuan berhasil disimpan.');
     }
 
     /**
