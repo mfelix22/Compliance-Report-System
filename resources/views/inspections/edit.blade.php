@@ -65,17 +65,6 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select name="status"
-                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none">
-                        @foreach (['open' => 'Open', 'in_review' => 'In Review', 'closed' => 'Closed'] as $val => $lbl)
-                            <option value="{{ $val }}" {{ $inspection->status === $val ? 'selected' : '' }}>
-                                {{ $lbl }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                     <textarea name="notes" rows="3"
                         class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none resize-none">{{ old('notes', $inspection->notes) }}</textarea>

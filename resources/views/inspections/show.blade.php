@@ -19,7 +19,7 @@
                 </p>
             </div>
             <div class="flex gap-2">
-                @can('update', $inspection)
+                @if (in_array(auth()->user()->role, ['admin', 'auditor']))
                     @if ($inspection->status !== 'closed')
                         <form method="POST" action="{{ route('inspections.close', $inspection) }}">
                             @csrf
@@ -33,7 +33,7 @@
                     @endif
                     <a href="{{ route('inspections.edit', $inspection) }}"
                         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Edit</a>
-                @endcan
+                @endif
                 <a href="{{ route('inspections.pdf', $inspection) }}"
                     class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

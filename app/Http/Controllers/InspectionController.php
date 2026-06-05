@@ -184,7 +184,6 @@ class InspectionController extends Controller
             'inspection_date' => ['required', 'date'],
             'auditor_ids'     => ['required', 'array', 'min:1'],
             'auditor_ids.*'   => ['exists:users,id'],
-            'status'          => ['required', 'in:open,closed,in_review'],
             'notes'           => ['nullable', 'string'],
         ]);
 
