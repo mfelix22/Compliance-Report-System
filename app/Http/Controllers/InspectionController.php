@@ -9,19 +9,30 @@ use App\Models\InspectionPolicy;
 use App\Models\InspectionTemplate;
 use App\Models\Outlet;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class InspectionController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $inspections = Inspection::with(['auditors', 'findings', 'outlet'])
-            ->latest()
-            ->paginate(15);
+        $query = Inspection::with(['auditors', 'findings', 'outlet'])
+            ->latest();
 
-        return view('inspections.index', compact('inspections'));
+        if ($request->filled('outlet_id')) {
+            $query->where('outlet_id', $request->outlet_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $inspections = $query->paginate(15)->withQueryString();
+        $outlets     = Outlet::where('is_active', true)->orderBy('name')->get();
+
+        return view('inspections.index', compact('inspections', 'outlets'));
     }
 
     public function create(): View
@@ -97,6 +108,64 @@ class InspectionController extends Controller
             'findingsByPolicy',
             'departments'
         ));
+    }
+
+    public function pdf(Inspection $inspection)
+    {
+        $inspection->load([
+            'outlet',
+            'auditors',
+            'findings.department',
+            'findings'           => fn($q) => $q->orderBy('number'),
+            'categoryStatuses',
+        ]);
+
+        $policies         = InspectionPolicy::with('items')->orderBy('sort_order')->get();
+        $statusByPolicy   = $inspection->categoryStatuses->keyBy('inspection_policy_id');
+        $findingsByPolicy = $inspection->findings->groupBy('inspection_policy_id');
+
+        $pdf = Pdf::loadView('inspections.pdf', compact(
+            'inspection',
+            'policies',
+            'statusByPolicy',
+            'findingsByPolicy',
+        ))->setPaper('a4', 'portrait');
+
+        return $pdf->download($inspection->reference_no . '.pdf');
+    }
+
+    public function close(Inspection $inspection): RedirectResponse
+    {
+        if ($inspection->status === 'closed') {
+            return redirect()->route('inspections.show', $inspection)
+                ->with('error', 'Inspection is already closed.');
+        }
+
+        $inspection->load(['categoryStatuses', 'findings']);
+        $policies      = InspectionPolicy::orderBy('sort_order')->get();
+        $totalPolicies = $policies->count();
+        $assessed      = $inspection->categoryStatuses->count();
+        $openFindings  = $inspection->findings->where('status', 'open')->count();
+
+        $warnings = [];
+
+        if ($assessed < $totalPolicies) {
+            $warnings[] = ($totalPolicies - $assessed) . ' checklist category/categories have not been assessed yet (C / NC / N/A).';
+        }
+
+        if ($openFindings > 0) {
+            $warnings[] = $openFindings . ' finding(s) are still open (not yet closed by auditee).';
+        }
+
+        if (!empty($warnings)) {
+            return redirect()->route('inspections.show', $inspection)
+                ->with('close_warnings', $warnings);
+        }
+
+        $inspection->update(['status' => 'closed']);
+
+        return redirect()->route('inspections.show', $inspection)
+            ->with('success', 'Inspection has been closed.');
     }
 
     public function edit(Inspection $inspection): View

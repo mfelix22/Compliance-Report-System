@@ -45,11 +45,13 @@ Route::middleware('auth')->group(function () {
 
     // Wildcard show — all authenticated
     Route::get('/inspections/{inspection}', [InspectionController::class, 'show'])->name('inspections.show');
+    Route::get('/inspections/{inspection}/pdf', [InspectionController::class, 'pdf'])->name('inspections.pdf');
 
     // Routes that require a bound {inspection} model (admin/auditor)
     Route::middleware('role:admin,auditor')->group(function () {
         Route::get('/inspections/{inspection}/edit', [InspectionController::class, 'edit'])->name('inspections.edit');
         Route::put('/inspections/{inspection}', [InspectionController::class, 'update'])->name('inspections.update');
+        Route::post('/inspections/{inspection}/close', [InspectionController::class, 'close'])->name('inspections.close');
         Route::delete('/inspections/{inspection}', [InspectionController::class, 'destroy'])->name('inspections.destroy');
 
         // Follow-up inspections

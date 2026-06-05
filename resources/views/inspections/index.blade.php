@@ -17,6 +17,45 @@
 @endsection
 
 @section('content')
+    {{-- Filter Bar --}}
+    <form method="GET" action="{{ route('inspections.index') }}"
+        class="flex flex-wrap items-end gap-3 mb-4">
+        <div class="flex-1 min-w-[180px]">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
+            <select name="outlet_id"
+                class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white">
+                <option value="">All Outlets</option>
+                @foreach ($outlets as $outlet)
+                    <option value="{{ $outlet->id }}" {{ request('outlet_id') == $outlet->id ? 'selected' : '' }}>
+                        {{ $outlet->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="min-w-[140px]">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Status</label>
+            <select name="status"
+                class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white">
+                <option value="">All Statuses</option>
+                <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>Open</option>
+                <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
+            </select>
+        </div>
+        <div class="flex items-end gap-2">
+            <button type="submit"
+                class="px-4 py-2 text-sm font-medium text-white rounded-lg transition"
+                style="background:#1b6840">
+                Filter
+            </button>
+            @if (request('outlet_id') || request('status'))
+                <a href="{{ route('inspections.index') }}"
+                    class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                    Clear
+                </a>
+            @endif
+        </div>
+    </form>
+
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <table class="min-w-full text-sm">
             <thead>

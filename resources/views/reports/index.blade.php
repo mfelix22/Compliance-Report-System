@@ -18,7 +18,14 @@
     {{-- Filters --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-6">
         <form method="GET" action="{{ route('reports.index') }}" class="space-y-3">
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <select name="outlet_id" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option value="">All Outlets</option>
+                    @foreach ($outlets as $outlet)
+                        <option value="{{ $outlet->id }}" {{ request('outlet_id') == $outlet->id ? 'selected' : '' }}>
+                            {{ $outlet->name }}</option>
+                    @endforeach
+                </select>
                 <select name="department_id" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
                     <option value="">All Departments</option>
                     @foreach ($departments as $dept)
@@ -58,7 +65,7 @@
                 <div class="flex gap-2">
                     <button type="submit" class="px-5 py-2 rounded-lg text-white text-sm font-medium hover:opacity-90"
                         style="background:#1b6840">Filter</button>
-                    @if (request()->hasAny(['department_id', 'status', 'verification_status', 'root_cause', 'date_from', 'date_to']))
+                    @if (request()->hasAny(['outlet_id', 'department_id', 'status', 'verification_status', 'root_cause', 'date_from', 'date_to']))
                         <a href="{{ route('reports.index') }}"
                             class="px-5 py-2 rounded-lg text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200">
                             Clear

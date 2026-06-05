@@ -39,6 +39,10 @@ class DashboardController extends Controller
             'closed_findings'   => Finding::where('status', 'closed')->count(),
             'pending_verify'    => Finding::where('verification_status', 'pending')
                 ->where('status', 'closed')->count(),
+            'overdue_findings'  => Finding::where('status', 'open')
+                ->whereNotNull('due_date')
+                ->where('due_date', '<', now()->startOfDay())
+                ->count(),
         ];
 
         $recentFindings = Finding::with(['inspection', 'department'])

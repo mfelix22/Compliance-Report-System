@@ -167,6 +167,25 @@
          ADMIN / AUDITOR DASHBOARD
     ════════════════════════════════════════ --}}
 
+        {{-- Overdue Alert --}}
+        @if ($stats['overdue_findings'] > 0)
+            <div class="flex items-center justify-between gap-4 bg-red-50 border border-red-200 rounded-xl px-5 py-3 mb-5">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-sm font-semibold text-red-700">
+                        {{ $stats['overdue_findings'] }} overdue finding{{ $stats['overdue_findings'] !== 1 ? 's' : '' }} — past due date and still open
+                    </p>
+                </div>
+                <a href="{{ route('reports.index', ['status' => 'open']) }}"
+                    class="flex-shrink-0 text-xs font-semibold text-red-700 underline hover:text-red-900">
+                    View →
+                </a>
+            </div>
+        @endif
+
         {{-- Stats Cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
             @foreach ([['label' => 'Total Inspections', 'value' => $stats['total_inspections'], 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2', 'color' => '#1b6840', 'bg' => '#e8f5ee'], ['label' => 'Open Findings', 'value' => $stats['open_findings'], 'icon' => 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z', 'color' => '#b45309', 'bg' => '#fef3c7'], ['label' => 'Closed Findings', 'value' => $stats['closed_findings'], 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'color' => '#065f46', 'bg' => '#d1fae5'], ['label' => 'Pending Verification', 'value' => $stats['pending_verify'], 'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', 'color' => '#1e40af', 'bg' => '#dbeafe']] as $card)

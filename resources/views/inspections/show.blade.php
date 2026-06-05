@@ -20,9 +20,28 @@
             </div>
             <div class="flex gap-2">
                 @can('update', $inspection)
+                    @if ($inspection->status !== 'closed')
+                        <form method="POST" action="{{ route('inspections.close', $inspection) }}">
+                            @csrf
+                            <button type="submit"
+                                class="px-4 py-2 text-sm font-medium text-white rounded-lg"
+                                style="background-color:#1b6840"
+                                onclick="return confirm('Close this inspection? This will be checked for completeness.')">
+                                Close Inspection
+                            </button>
+                        </form>
+                    @endif
                     <a href="{{ route('inspections.edit', $inspection) }}"
-                        class="px-4 py-2 text-sm font-medium text-white rounded-lg" style="background-color:#1b6840">Edit</a>
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Edit</a>
                 @endcan
+                <a href="{{ route('inspections.pdf', $inspection) }}"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    PDF
+                </a>
                 <a href="{{ route('inspections.index') }}"
                     class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
                     Kembali
@@ -33,6 +52,22 @@
         @if (session('success'))
             <div class="p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm">
                 {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">
+                {{ session('error') }}
+            </div>
+        @endif
+        @if (session('close_warnings'))
+            <div class="p-4 rounded-lg bg-amber-50 border border-amber-300 text-amber-800 text-sm">
+                <p class="font-semibold mb-2">⚠ Inspection cannot be closed yet — the following items are incomplete:</p>
+                <ul class="list-disc list-inside space-y-0.5">
+                    @foreach (session('close_warnings') as $w)
+                        <li>{{ $w }}</li>
+                    @endforeach
+                </ul>
+                <p class="mt-2 text-xs text-amber-600">Resolve all items above, then try closing again.</p>
             </div>
         @endif
         @if ($errors->any())
