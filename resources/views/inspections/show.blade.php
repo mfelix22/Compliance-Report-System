@@ -384,8 +384,6 @@
                                                     @if ($finding->photo)
                                                         <a href="{{ Storage::url($finding->photo) }}" target="_blank" class="text-blue-500 hover:underline">Foto</a>
                                                     @endif
-                                                </div>
-                                                <div class="flex items-center gap-2 mt-1">
                                                     @if (auth()->user()->isAuditee())
                                                         <a href="{{ route('findings.edit', $finding) }}" class="text-blue-600 hover:underline">Isi Respons</a>
                                                     @endif
