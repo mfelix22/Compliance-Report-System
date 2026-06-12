@@ -216,6 +216,7 @@
                         <th class="px-4 py-3 text-center w-16">NC</th>
                         <th class="px-4 py-3 text-center w-16">N/A</th>
                         <th class="px-4 py-3 text-center w-24">Status</th>
+                        <th class="px-4 py-3 text-left">Findings</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -334,114 +335,89 @@
                                         class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">—</span>
                                 @endif
                             </td>
-                        </tr>
 
-                        {{-- Existing findings for this category --}}
-                        @foreach ($catFindings as $finding)
-                            <tr class="border-b border-gray-100 bg-white">
-                                <td class="px-5 py-2"></td>
-                                <td class="px-5 py-2" colspan="4">
-                                    <div class="flex items-start gap-3">
-                                        <div class="flex-1 text-xs space-y-1">
-                                            @if ($finding->parent_finding_id)
-                                                <span
-                                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
-                                                    &#x21A9; Follow-up dari Finding
-                                                    #{{ $finding->parentFinding->number ?? $finding->parent_finding_id }}
-                                                </span>
-                                            @endif
-                                            {{-- Selected items --}}
-                                            @if ($finding->selected_policy_item_ids)
-                                                <div class="flex flex-wrap gap-1">
-                                                    @foreach ($finding->selected_policy_item_ids as $itemId)
-                                                        @php $item = $policy->items->find($itemId) @endphp
-                                                        @if ($item)
-                                                            <span
-                                                                class="inline-flex items-center px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs">
-                                                                {{ $item->text }}
-                                                            </span>
-                                                        @endif
-                                                    @endforeach
-                                                </div>
-                                            @endif
-                                            {{-- Custom / added items --}}
-                                            @if ($finding->custom_finding_items)
-                                                <div class="flex flex-wrap gap-1">
-                                                    @foreach ($finding->custom_finding_items as $ci)
-                                                        <span
-                                                            class="inline-flex items-center px-2 py-0.5 rounded bg-orange-100 text-orange-700 text-xs">
-                                                            &#x2713; {{ $ci }}
-                                                        </span>
-                                                    @endforeach
-                                                </div>
-                                            @endif
-                                            @if ($finding->finding)
-                                                <p class="text-gray-700 italic">{{ $finding->finding }}</p>
-                                            @endif
-                                            <div class="flex flex-wrap gap-3 text-gray-500 mt-1">
-                                                <span>Root cause:
-                                                    <strong>{{ ucfirst($finding->root_cause) }}</strong></span>
-                                                <span>PIC: <strong>{{ $finding->department?->name }}</strong></span>
-                                                @if ($finding->due_date)
-                                                    <span
-                                                        class="{{ $finding->isOverdue && $finding->status !== 'closed' ? 'text-red-600 font-semibold' : '' }}">
-                                                        Due: {{ $finding->due_date->format('d M Y') }}
+                            {{-- Inline findings cell --}}
+                            <td class="px-4 py-3 align-top">
+                                @if ($catFindings->isEmpty())
+                                    <span class="text-gray-300 text-sm">—</span>
+                                @else
+                                    <div class="space-y-2">
+                                        @foreach ($catFindings as $finding)
+                                            <div class="text-xs border border-gray-100 rounded-lg p-2 bg-white space-y-1">
+                                                @if ($finding->parent_finding_id)
+                                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                                                        &#x21A9; Follow-up #{{ $finding->parentFinding->number ?? $finding->parent_finding_id }}
                                                     </span>
                                                 @endif
-                                                <span
-                                                    class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium
-                                        {{ $finding->status === 'closed' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700' }}">
-                                                    {{ ucfirst($finding->status) }}
-                                                </span>
+                                                @if ($finding->selected_policy_item_ids)
+                                                    <div class="flex flex-wrap gap-1">
+                                                        @foreach ($finding->selected_policy_item_ids as $itemId)
+                                                            @php $item = $policy->items->find($itemId) @endphp
+                                                            @if ($item)
+                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-red-100 text-red-700 text-xs">{{ $item->text }}</span>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                                @if ($finding->custom_finding_items)
+                                                    <div class="flex flex-wrap gap-1">
+                                                        @foreach ($finding->custom_finding_items as $ci)
+                                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 text-xs">&#x2713; {{ $ci }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                                @if ($finding->finding)
+                                                    <p class="text-gray-700 italic">{{ $finding->finding }}</p>
+                                                @endif
+                                                <div class="flex flex-wrap items-center gap-2 text-gray-500 mt-0.5">
+                                                    <span>{{ ucfirst($finding->root_cause) }}</span>
+                                                    <span class="text-gray-200">·</span>
+                                                    <span>{{ $finding->department?->name }}</span>
+                                                    @if ($finding->due_date)
+                                                        <span class="{{ $finding->isOverdue && $finding->status !== 'closed' ? 'text-red-600 font-semibold' : '' }}">
+                                                            Due: {{ $finding->due_date->format('d M Y') }}
+                                                        </span>
+                                                    @endif
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium {{ $finding->status === 'closed' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700' }}">
+                                                        {{ ucfirst($finding->status) }}
+                                                    </span>
+                                                    @if ($finding->photo)
+                                                        <a href="{{ Storage::url($finding->photo) }}" target="_blank" class="text-blue-500 hover:underline">Foto</a>
+                                                    @endif
+                                                </div>
+                                                <div class="flex items-center gap-2 mt-1">
+                                                    @if (auth()->user()->isAuditee())
+                                                        <a href="{{ route('findings.edit', $finding) }}" class="text-blue-600 hover:underline">Isi Respons</a>
+                                                    @endif
+                                                    @if (in_array(auth()->user()->role, ['admin', 'auditor']))
+                                                        @if ($finding->followUpFinding)
+                                                            <span class="text-amber-600 cursor-default" title="Follow-up #{{ $finding->followUpFinding->number }} sudah dibuat">&#x21A9; Follow-up</span>
+                                                        @elseif ($finding->corrective_action)
+                                                            <a href="{{ route('findings.verify', $finding) }}" class="text-purple-600 hover:underline">Verifikasi</a>
+                                                        @else
+                                                            <span class="text-gray-300 cursor-not-allowed" title="Auditee belum mengisi respons">Verifikasi</span>
+                                                        @endif
+                                                        @if ($inspection->status !== 'closed')
+                                                            <form method="POST" action="{{ route('findings.destroy', $finding) }}" onsubmit="return confirm('Hapus temuan ini?')">
+                                                                @csrf @method('DELETE')
+                                                                <button type="submit" class="text-red-500 hover:underline">Hapus</button>
+                                                            </form>
+                                                        @endif
+                                                    @endif
+                                                </div>
                                             </div>
-                                            @if ($finding->keterangan)
-                                                <p class="text-gray-500 italic">Catatan: {{ $finding->keterangan }}</p>
-                                            @endif
-                                        </div>
-                                        <div class="flex items-center gap-2 shrink-0">
-                                            @if ($finding->photo)
-                                                <a href="{{ Storage::url($finding->photo) }}" target="_blank"
-                                                    class="text-xs text-blue-600 hover:underline">Foto</a>
-                                            @endif
-                                            @if (auth()->user()->isAuditee())
-                                                <a href="{{ route('findings.edit', $finding) }}"
-                                                    class="text-xs text-blue-600 hover:underline">Isi Respons</a>
-                                            @endif
-                                            @if (in_array(auth()->user()->role, ['admin', 'auditor']))
-                                                @if ($finding->followUpFinding)
-                                                    <span class="text-xs text-amber-600 cursor-default"
-                                                        title="Follow-up finding #{{ $finding->followUpFinding->number }} sudah dibuat">&#x21A9;
-                                                        Follow-up</span>
-                                                @elseif ($finding->corrective_action)
-                                                    <a href="{{ route('findings.verify', $finding) }}"
-                                                        class="text-xs text-purple-600 hover:underline">Verifikasi</a>
-                                                @else
-                                                    <span class="text-xs text-gray-300 cursor-not-allowed"
-                                                        title="Auditee belum mengisi respons">Verifikasi</span>
-                                                @endif
-                                                @if ($inspection->status !== 'closed')
-                                                    <form method="POST"
-                                                        action="{{ route('findings.destroy', $finding) }}"
-                                                        onsubmit="return confirm('Hapus temuan ini?')">
-                                                        @csrf @method('DELETE')
-                                                        <button type="submit"
-                                                            class="text-xs text-red-500 hover:underline">Hapus</button>
-                                                    </form>
-                                                @endif
-                                            @endif
-                                        </div>
+                                        @endforeach
                                     </div>
-                                </td>
-                                <td></td>
-                            </tr>
-                        @endforeach
+                                @endif
+                            </td>
+                        </tr>
 
                         {{-- NC inline finding form --}}
                         @if (in_array(auth()->user()->role, ['admin', 'auditor']))
                             @php $hasItems = $policy->items->count() > 0; @endphp
                             <tr id="{{ $ncFormId }}"
                                 class="{{ $expandForm ? '' : 'hidden' }} border-b border-red-300 bg-white">
-                                <td class="px-5 py-4" colspan="6">
+                                <td class="px-5 py-4" colspan="7">
                                     <form method="POST" action="{{ route('findings.store', $inspection) }}"
                                         enctype="multipart/form-data" class="space-y-5">
                                         @csrf
