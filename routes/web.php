@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryStatusController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\FindingController;
@@ -71,6 +72,10 @@ Route::middleware('auth')->group(function () {
     // Finding response — auditee fills corrective/preventive actions
     Route::get('/findings/{finding}/edit', [FindingController::class, 'edit'])->name('findings.edit');
     Route::put('/findings/{finding}', [FindingController::class, 'update'])->name('findings.update');
+
+    // Comments
+    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
     // Reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

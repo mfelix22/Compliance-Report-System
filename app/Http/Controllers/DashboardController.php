@@ -55,6 +55,24 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('dashboard', compact('stats', 'recentFindings', 'recentInspections'));
+        // Chart data
+        $trendData = Finding::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        $byDepartment = Finding::selectRaw('d.name as department, COUNT(*) as count')
+            ->join('departments as d', 'findings.department_id', '=', 'd.id')
+            ->groupBy('d.name')
+            ->orderByDesc('count')
+            ->get();
+
+        $byRootCause = Finding::selectRaw('root_cause, COUNT(*) as count')
+            ->groupBy('root_cause')
+            ->orderByDesc('count')
+            ->get();
+
+        return view('dashboard', compact('stats', 'recentFindings', 'recentInspections', 'trendData', 'byDepartment', 'byRootCause'));
     }
 }

@@ -114,8 +114,9 @@ class FindingController extends Controller
                 ->with('error', 'Anda tidak memiliki akses ke temuan ini.');
         }
 
-        $finding->load('inspection', 'department', 'policy', 'policyItem');
-        return view('findings.edit', compact('finding'));
+        $finding->load('inspection', 'department', 'policy', 'policyItem', 'comments.user', 'comments.children.user');
+        $mentionUsers = \App\Models\User::orderBy('name')->get(['id', 'name']);
+        return view('findings.edit', compact('finding', 'mentionUsers'));
     }
 
     public function update(Request $request, Finding $finding): RedirectResponse

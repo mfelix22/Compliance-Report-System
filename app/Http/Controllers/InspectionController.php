@@ -12,6 +12,7 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class InspectionController extends Controller
@@ -94,6 +95,8 @@ class InspectionController extends Controller
             'findings.followUpFinding',
             'findings'           => fn($q) => $q->orderBy('number'),
             'categoryStatuses',
+            'comments.user',
+            'comments.children.user',
         ]);
 
         $policies        = InspectionPolicy::with('items')->orderBy('sort_order')->get();
@@ -101,12 +104,26 @@ class InspectionController extends Controller
         $findingsByPolicy = $inspection->findings->groupBy('inspection_policy_id');
         $departments     = Department::orderBy('name')->get();
 
+        // Prepare photo data for lightbox
+        $photos = $inspection->findings->whereNotNull('photo')->map(function ($f) {
+            return [
+                'url' => Storage::url($f->photo),
+                'finding' => $f->finding,
+                'number' => $f->number,
+                'department' => $f->department?->name,
+            ];
+        })->values()->all();
+
+        $mentionUsers = User::orderBy('name')->get(['id', 'name']);
+
         return view('inspections.show', compact(
             'inspection',
             'policies',
             'statusByPolicy',
             'findingsByPolicy',
-            'departments'
+            'departments',
+            'photos',
+            'mentionUsers'
         ));
     }
 

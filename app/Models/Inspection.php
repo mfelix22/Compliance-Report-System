@@ -90,6 +90,11 @@ class Inspection extends Model
         return $this->hasMany(Finding::class)->where('verification_status', 'not_complied');
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public static function generateReferenceNo(): string
     {
         $year  = now()->year;

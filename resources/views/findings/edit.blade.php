@@ -97,5 +97,11 @@
                 </div>
             </form>
         </div>
+
+        @include('partials.comments', [
+            'comments'     => $finding->comments,
+            'inspectionId' => $finding->inspection_id,
+            'findingId'    => $finding->id,
+        ])
     </div>
 @endsection

@@ -34,6 +34,16 @@
                     <a href="{{ route('inspections.edit', $inspection) }}"
                         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Edit</a>
                 @endif
+                @if ($inspection->findings->whereNotNull('photo')->count() > 0)
+                    <button type="button" onclick="openPhotoGallery()"
+                        class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Photos ({{ $inspection->findings->whereNotNull('photo')->count() }})
+                    </button>
+                @endif
                 <a href="{{ route('inspections.pdf', $inspection) }}"
                     class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -658,6 +668,11 @@
             </table>
         </div>
 
+        @include('partials.comments', [
+            'comments'    => $inspection->comments,
+            'inspectionId' => $inspection->id,
+        ])
+
         {{-- Follow-up button --}}
         {{-- @if (in_array(auth()->user()->role, ['admin', 'auditor']))
             @php $notComplied = $inspection->findings->where('verification_status', 'not_complied')->count(); @endphp
@@ -709,7 +724,7 @@
             }
             reindexFindingCards(policyId);
             updateSubmitBtn(policyId);
-            const remainingCards = document.querySelectorAll(`#finding-cards-${policyId} .finding-card`).length;
+            const remainingCards = document.querySelectorAll('#finding-cards-' + policyId + ' .finding-card').length;
             if (!checkbox.checked && remainingCards === 0) {
                 hideNCForm('nc-form-' + policyId);
                 return;
@@ -730,13 +745,13 @@
             }
             card.querySelector('.card-remove-btn').addEventListener('click', function() {
                 const cb = document.querySelector(
-                    `.finding-item-cb[data-policy="${policyId}"][data-item-id="${itemId}"]`
+                    '.finding-item-cb[data-policy="' + policyId + '"][data-item-id="' + itemId + '"]'
                 );
                 if (cb) cb.checked = false;
                 this.closest('.finding-card').remove();
                 reindexFindingCards(policyId);
                 updateSubmitBtn(policyId);
-                const remainingCards = document.querySelectorAll(`#finding-cards-${policyId} .finding-card`).length;
+                const remainingCards = document.querySelectorAll('#finding-cards-' + policyId + ' .finding-card').length;
                 if (remainingCards === 0) {
                     hideNCForm('nc-form-' + policyId);
                     return;
@@ -767,7 +782,7 @@
             requestAnimationFrame(() => {
                 clampMainScroll();
 
-                const count = document.querySelectorAll(`#finding-cards-${policyId} .finding-card`).length;
+                const count = document.querySelectorAll('#finding-cards-' + policyId + ' .finding-card').length;
                 if (count > 0) {
                     const submitBtn = document.getElementById('submit-btn-' + policyId);
                     if (submitBtn) {
@@ -792,13 +807,13 @@
 
         function removeFindingCard(policyId, itemId) {
             const card = document.querySelector(
-                `#finding-cards-${policyId} .finding-card[data-item-id="${itemId}"]`
+                '#finding-cards-' + policyId + ' .finding-card[data-item-id="' + itemId + '"]'
             );
             if (card) card.remove();
         }
 
         function reindexFindingCards(policyId) {
-            const cards = document.querySelectorAll(`#finding-cards-${policyId} .finding-card`);
+            const cards = document.querySelectorAll('#finding-cards-' + policyId + ' .finding-card');
             const noMsg = document.getElementById('no-items-msg-' + policyId);
             if (noMsg) noMsg.classList.toggle('hidden', cards.length > 0);
             // Hide the container itself when empty so it doesn't add a dead-zone gap (space-y-5 margins)
@@ -811,24 +826,98 @@
                     const el = card.querySelector(sel);
                     if (el) el.name = name;
                 };
-                setName('.input-item-id', `findings[${i}][item_id]`);
-                setName('.input-item-text', `findings[${i}][item_text]`);
-                setName('.input-description', `findings[${i}][description]`);
-                setName('.input-department', `findings[${i}][department_id]`);
-                setName('.input-photo', `findings[${i}][photo]`);
-                setName('.input-keterangan', `findings[${i}][keterangan]`);
+                setName('.input-item-id', 'findings[' + i + '][item_id]');
+                setName('.input-item-text', 'findings[' + i + '][item_text]');
+                setName('.input-description', 'findings[' + i + '][description]');
+                setName('.input-department', 'findings[' + i + '][department_id]');
+                setName('.input-photo', 'findings[' + i + '][photo]');
+                setName('.input-keterangan', 'findings[' + i + '][keterangan]');
                 card.querySelectorAll('input[type="radio"]').forEach(r => {
-                    r.name = `findings[${i}][root_cause]`;
+                    r.name = 'findings[' + i + '][root_cause]';
                 });
             });
         }
 
         function updateSubmitBtn(policyId) {
-            const count = document.querySelectorAll(`#finding-cards-${policyId} .finding-card`).length;
+            const count = document.querySelectorAll('#finding-cards-' + policyId + ' .finding-card').length;
             const btn = document.getElementById('submit-btn-' + policyId);
             if (!btn) return;
             btn.disabled = count === 0;
-            btn.textContent = count > 1 ? `Simpan ${count} Temuan NC` : 'Simpan Temuan NC';
+            btn.textContent = count > 1 ? 'Simpan ' + count + ' Temuan NC' : 'Simpan Temuan NC';
         }
+
+        // Photo Gallery Lightbox
+        const photos = @json($photos);
+        let currentPhotoIndex = 0;
+
+        function openPhotoGallery(startIndex) {
+            if (photos.length === 0) return;
+            currentPhotoIndex = startIndex || 0;
+            updateLightbox();
+            document.getElementById('photo-gallery-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            history.pushState({ gallery: true }, '');
+        }
+
+        function closePhotoGallery() {
+            document.getElementById('photo-gallery-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        window.addEventListener('popstate', function(e) {
+            const modal = document.getElementById('photo-gallery-modal');
+            if (modal && !modal.classList.contains('hidden')) {
+                closePhotoGallery();
+            }
+        });
+
+        function updateLightbox() {
+            const photo = photos[currentPhotoIndex];
+            document.getElementById('lightbox-img').src = photo.url;
+            document.getElementById('lightbox-finding').textContent = photo.finding || '';
+            document.getElementById('lightbox-meta').textContent = 'Finding #' + photo.number + ' · ' + (photo.department || '—');
+            document.getElementById('lightbox-counter').textContent = (currentPhotoIndex + 1) + ' / ' + photos.length;
+        }
+
+        function nextPhoto() {
+            currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
+            updateLightbox();
+        }
+
+        function prevPhoto() {
+            currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
+            updateLightbox();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('photo-gallery-modal');
+            if (modal && !modal.classList.contains('hidden')) {
+                if (e.key === 'Escape') { history.back(); }
+                if (e.key === 'ArrowRight') nextPhoto();
+                if (e.key === 'ArrowLeft') prevPhoto();
+            }
+        });
     </script>
+
+    {{-- Photo Gallery Modal --}}
+    <div id="photo-gallery-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
+        <button type="button" onclick="closePhotoGallery()"
+            class="absolute top-4 right-4 text-white/70 hover:text-white text-2xl">&times;</button>
+
+        <button type="button" onclick="prevPhoto()"
+            class="absolute left-4 text-white/70 hover:text-white text-3xl" {{ count($photos) <= 1 ? 'disabled' : '' }}>&lsaquo;</button>
+
+        <div class="max-w-4xl max-h-[85vh] flex flex-col items-center">
+            <img id="lightbox-img" src="" alt="Finding photo" class="max-w-full max-h-[75vh] object-contain rounded-lg">
+            <div class="mt-4 text-center text-white">
+                <p id="lightbox-finding" class="text-sm font-medium mb-1"></p>
+                <p id="lightbox-meta" class="text-xs text-white/60"></p>
+                <p id="lightbox-counter" class="text-xs text-white/40 mt-2"></p>
+            </div>
+        </div>
+
+        <button type="button" onclick="nextPhoto()"
+            class="absolute right-4 text-white/70 hover:text-white text-3xl" {{ count($photos) <= 1 ? 'disabled' : '' }}>&rsaquo;</button>
+    </div>
 @endsection

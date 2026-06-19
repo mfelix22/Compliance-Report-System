@@ -94,6 +94,11 @@ class Finding extends Model
         return $this->hasOne(Finding::class, 'parent_finding_id');
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function getRootCauseLabelAttribute(): string
     {
         return match ($this->root_cause) {

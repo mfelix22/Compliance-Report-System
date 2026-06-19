@@ -206,6 +206,33 @@
             @endforeach
         </div>
 
+        {{-- Charts --}}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            {{-- Trend Chart --}}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                <h3 class="font-semibold text-gray-900 mb-4">Findings Trend (30 Days)</h3>
+                <div style="position:relative;height:200px">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            {{-- By Department --}}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                <h3 class="font-semibold text-gray-900 mb-4">Findings by Department</h3>
+                <div style="position:relative;height:200px">
+                    <canvas id="departmentChart"></canvas>
+                </div>
+            </div>
+
+            {{-- Root Cause --}}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                <h3 class="font-semibold text-gray-900 mb-4">Root Cause Distribution</h3>
+                <div style="position:relative;height:200px">
+                    <canvas id="rootCauseChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
             {{-- Recent Findings --}}
@@ -280,3 +307,87 @@
 
     @endif
 @endsection
+
+@push('scripts')
+@if (in_array(auth()->user()->role, ['admin', 'auditor']))
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        // Trend Chart (Line)
+        const trendCtx = document.getElementById('trendChart');
+        @if(isset($trendData))
+        if (trendCtx) {
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: @json($trendData->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('d M'); })->values()->all()),
+                    datasets: [{
+                        label: 'Findings',
+                        data: @json($trendData->pluck('count')->values()->all()),
+                        borderColor: '#1b6840',
+                        backgroundColor: 'rgba(27, 104, 64, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
+        }
+        @endif
+
+        // Department Chart (Bar)
+        const deptCtx = document.getElementById('departmentChart');
+        @if(isset($byDepartment))
+        if (deptCtx) {
+            new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                    labels: @json($byDepartment->pluck('department')->values()->all()),
+                    datasets: [{
+                        label: 'Findings',
+                        data: @json($byDepartment->pluck('count')->values()->all()),
+                        backgroundColor: '#1b6840'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
+        }
+        @endif
+
+        // Root Cause Chart (Pie)
+        const rootCtx = document.getElementById('rootCauseChart');
+        @if(isset($byRootCause))
+        if (rootCtx) {
+            new Chart(rootCtx, {
+                type: 'pie',
+                data: {
+                    labels: @json($byRootCause->pluck('root_cause')->map(function($r) { return ucfirst($r); })->values()->all()),
+                    datasets: [{
+                        data: @json($byRootCause->pluck('count')->values()->all()),
+                        backgroundColor: ['#1b6840', '#b45309', '#065f46', '#1e40af', '#dc2626', '#9ca3af']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+        @endif
+    </script>
+@endif
+@endpush

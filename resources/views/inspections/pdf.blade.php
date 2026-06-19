@@ -55,8 +55,16 @@
         .checklist-table th { padding: 6px 8px; text-align: left; font-size: 9px; font-weight: bold;
             text-transform: uppercase; letter-spacing: 0.06em; color: #374151;
             border-bottom: 2px solid #1b6840; }
-        .checklist-table td { padding: 6px 8px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
-        .checklist-table tr:nth-child(even) td { background: #f9fafb; }
+        .checklist-table td { padding: 6px 8px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+        .checklist-table tr.cat-row:nth-child(odd) td { background: #fff; }
+        .checklist-table tr.cat-row:nth-child(even) td { background: #f9fafb; }
+
+        .finding-sub-row td { background: #fffbeb !important; border-bottom: 1px solid #fde68a; padding: 5px 8px 5px 28px; }
+        .finding-sub-row td.finding-num { color: #b45309; font-family: monospace; font-weight: bold; width: 32px; padding-left: 12px; }
+        .finding-detail { font-size: 9.5px; color: #1a1a1a; }
+        .finding-detail .finding-desc { font-weight: bold; margin-bottom: 2px; }
+        .finding-detail .finding-meta { color: #6b7280; font-size: 9px; }
+        .finding-detail .finding-actions { color: #374151; font-size: 9px; margin-top: 2px; }
 
         .footer { margin: 30px 24px 16px; border-top: 1px solid #e5e7eb; padding-top: 10px;
             font-size: 9px; color: #9ca3af; display: table; width: calc(100% - 48px); }
@@ -151,16 +159,16 @@
         </div>
     </div>
 
-    {{-- Checklist --}}
+    {{-- Checklist with inline findings --}}
     <div class="section">
-        <div class="section-title">Audit Checklist</div>
+        <div class="section-title">Audit Checklist &amp; Findings</div>
         <table class="checklist-table">
             <thead>
                 <tr>
                     <th style="width:32px">#</th>
-                    <th>Category</th>
+                    <th>Category / Finding</th>
                     <th style="width:90px">Status</th>
-                    <th style="width:80px">Findings</th>
+                    <th style="width:90px">Dept / Due Date</th>
                 </tr>
             </thead>
             <tbody>
@@ -169,9 +177,13 @@
                         $catStatus   = $statusByPolicy->get($policy->id);
                         $catFindings = $findingsByPolicy->get($policy->id, collect());
                     @endphp
-                    <tr>
-                        <td style="color:#9ca3af; font-family:monospace;">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</td>
-                        <td>{{ $policy->name }}</td>
+
+                    {{-- Category row --}}
+                    <tr class="cat-row">
+                        <td style="color:#9ca3af; font-family:monospace; font-weight:bold;">
+                            {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
+                        </td>
+                        <td style="font-weight:bold; color:#111827;">{{ $policy->name }}</td>
                         <td>
                             @if ($catStatus)
                                 <span class="badge badge-{{ strtolower($catStatus->status) }}">{{ $catStatus->status }}</span>
@@ -179,56 +191,54 @@
                                 <span style="color:#d1d5db;">—</span>
                             @endif
                         </td>
-                        <td style="color:#374151;">{{ $catFindings->count() ?: '—' }}</td>
+                        <td style="color:#6b7280; font-size:9px;">
+                            @if($catFindings->count() > 0)
+                                {{ $catFindings->count() }} finding(s)
+                            @else
+                                —
+                            @endif
+                        </td>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
 
-    {{-- Findings --}}
-    @if ($inspection->findings->count() > 0)
-    <div class="section">
-        <div class="section-title">Findings ({{ $inspection->findings->count() }})</div>
-        <table class="findings-table">
-            <thead>
-                <tr>
-                    <th style="width:28px">#</th>
-                    <th>Finding</th>
-                    <th style="width:75px">Root Cause</th>
-                    <th style="width:90px">Department</th>
-                    <th style="width:70px">Due Date</th>
-                    <th style="width:55px">Status</th>
-                    <th style="width:75px">Verification</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($inspection->findings->sortBy('number') as $finding)
-                <tr>
-                    <td style="color:#9ca3af; font-family:monospace;">{{ $finding->number }}</td>
-                    <td>
-                        {{ $finding->finding }}
-                        @if ($finding->corrective_action)
-                            <div style="margin-top:3px; color:#6b7280; font-size:9px;"><strong>CA:</strong> {{ $finding->corrective_action }}</div>
-                        @endif
-                        @if ($finding->preventive_action)
-                            <div style="margin-top:2px; color:#6b7280; font-size:9px;"><strong>PA:</strong> {{ $finding->preventive_action }}</div>
-                        @endif
-                    </td>
-                    <td>{{ ucfirst($finding->root_cause) }}</td>
-                    <td>{{ $finding->department?->name ?? '—' }}</td>
-                    <td>{{ $finding->due_date?->format('d M Y') ?? '—' }}</td>
-                    <td><span class="badge badge-{{ $finding->status }}">{{ ucfirst($finding->status) }}</span></td>
-                    <td>
-                        @php $vs = $finding->verification_status; @endphp
-                        <span class="badge badge-{{ $vs }}">{{ ucfirst(str_replace('_', ' ', $vs)) }}</span>
-                    </td>
-                </tr>
+                    {{-- Inline findings under NC/NA categories --}}
+                    @if ($catFindings->count() > 0)
+                        @foreach ($catFindings->sortBy('number') as $finding)
+                        <tr class="finding-sub-row">
+                            <td class="finding-num">{{ $finding->number }}</td>
+                            <td colspan="3">
+                                <div class="finding-detail">
+                                    <div class="finding-desc">{{ $finding->finding }}</div>
+                                    <div class="finding-meta">
+                                        @if ($finding->department)
+                                            {{ $finding->department->name }}
+                                        @endif
+                                        @if ($finding->due_date)
+                                            &nbsp;·&nbsp; Due: {{ $finding->due_date->format('d M Y') }}
+                                        @endif
+                                        @if ($finding->root_cause)
+                                            &nbsp;·&nbsp; Root cause: {{ ucfirst($finding->root_cause) }}
+                                        @endif
+                                        &nbsp;·&nbsp;
+                                        <span class="badge badge-{{ $finding->status }}">{{ ucfirst($finding->status) }}</span>
+                                        @php $vs = $finding->verification_status; @endphp
+                                        &nbsp;<span class="badge badge-{{ $vs }}">{{ ucfirst(str_replace('_', ' ', $vs)) }}</span>
+                                    </div>
+                                    @if ($finding->corrective_action)
+                                        <div class="finding-actions"><strong>CA:</strong> {{ $finding->corrective_action }}</div>
+                                    @endif
+                                    @if ($finding->preventive_action)
+                                        <div class="finding-actions"><strong>PA:</strong> {{ $finding->preventive_action }}</div>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    @endif
+
                 @endforeach
             </tbody>
         </table>
     </div>
-    @endif
 
     {{-- Footer --}}
     <div class="footer">
