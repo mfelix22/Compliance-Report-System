@@ -141,11 +141,20 @@ class InspectionController extends Controller
         $statusByPolicy   = $inspection->categoryStatuses->keyBy('inspection_policy_id');
         $findingsByPolicy = $inspection->findings->groupBy('inspection_policy_id');
 
+        // Build absolute photo paths for dompdf
+        $photoPaths = [];
+        foreach ($inspection->findings as $f) {
+            if ($f->photo && Storage::disk('public')->exists($f->photo)) {
+                $photoPaths[$f->id] = Storage::disk('public')->path($f->photo);
+            }
+        }
+
         $pdf = Pdf::loadView('inspections.pdf', compact(
             'inspection',
             'policies',
             'statusByPolicy',
             'findingsByPolicy',
+            'photoPaths',
         ))->setPaper('a4', 'portrait');
 
         return $pdf->download($inspection->reference_no . '.pdf');

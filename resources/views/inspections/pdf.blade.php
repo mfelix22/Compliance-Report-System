@@ -208,6 +208,9 @@
                             <td colspan="3">
                                 <div class="finding-detail">
                                     <div class="finding-desc">{{ $finding->finding }}</div>
+                                    @if(isset($photoPaths[$finding->id]))
+                                        <img src="{{ $photoPaths[$finding->id] }}" alt="Finding photo" style="max-width:280px; max-height:180px; margin:4px 0; border-radius:4px; border:1px solid #e5e7eb;">
+                                    @endif
                                     <div class="finding-meta">
                                         @if ($finding->department)
                                             {{ $finding->department->name }}
