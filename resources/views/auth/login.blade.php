@@ -57,8 +57,8 @@
                 </button>
             </form>
 
-            {{-- Demo credentials --}}
-            <div class="mt-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
+            {{-- Demo credentials (hidden) --}}
+            <div class="hidden mt-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Demo Accounts</p>
                 <div class="space-y-2 text-xs">
                     @foreach ([['Admin', 'admin@foodcontrol.com', 'Admin'], ['Auditor', 'auditor@foodcontrol.com', 'Auditor'], ['Auditee', 'kitchen@foodcontrol.com', 'FB Product'], ['Auditee', 'fnb@foodcontrol.com', 'FB Service']] as [$role, $email, $dept])

@@ -39,7 +39,7 @@ class InspectionController extends Controller
     public function create(): View
     {
         $outlets   = Outlet::where('is_active', true)->orderBy('name')->get();
-        $auditors  = User::whereIn('role', ['admin', 'auditor'])->orderBy('name')->get();
+        $auditors  = User::where('role', 'auditor')->orderBy('name')->get();
         $templates = InspectionTemplate::where('is_active', true)->orderBy('name')->get();
         return view('inspections.create', compact('outlets', 'auditors', 'templates'));
     }
@@ -198,7 +198,7 @@ class InspectionController extends Controller
     {
         $inspection->load(['auditors', 'outlet']);
         $outlets  = Outlet::where('is_active', true)->orderBy('name')->get();
-        $auditors = User::whereIn('role', ['admin', 'auditor'])->orderBy('name')->get();
+        $auditors = User::where('role', 'auditor')->orderBy('name')->get();
         return view('inspections.edit', compact('inspection', 'outlets', 'auditors'));
     }
 
@@ -235,7 +235,7 @@ class InspectionController extends Controller
     {
         $parent->load(['notCompliedFindings.department', 'outlet', 'auditors']);
         $outlets   = Outlet::where('is_active', true)->orderBy('name')->get();
-        $auditors  = User::whereIn('role', ['admin', 'auditor'])->orderBy('name')->get();
+        $auditors  = User::where('role', 'auditor')->orderBy('name')->get();
         return view('inspections.follow_up', compact('parent', 'outlets', 'auditors'));
     }
 
