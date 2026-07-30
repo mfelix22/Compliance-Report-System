@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Dashboard')
 @section('page-title', auth()->user()->isAuditee() ? 'Temuan Saya' : 'Dashboard')
-@section('page-subtitle', auth()->user()->isAuditee() ? (auth()->user()->department?->name ?? 'My Department') . ' –
+@section('page-subtitle', auth()->user()->isAuditee() ? (auth()->user()->departments->pluck('name')->join(', ') ?: 'My Department') . ' –
     Corrective Action Tasks' : 'Food Safety Management Overview')
 
 @section('header-actions')

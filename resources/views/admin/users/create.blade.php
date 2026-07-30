@@ -55,19 +55,25 @@
                                 (Auditee)</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
-                        <select name="department_id"
-                            class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none">
-                            <option value="">— None —</option>
-                            @foreach ($departments as $dept)
-                                <option value="{{ $dept->id }}"
-                                    {{ old('department_id') == $dept->id ? 'selected' : '' }}>
-                                    {{ $dept->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Departments</label>
+                    <div class="grid grid-cols-2 gap-2 border border-gray-300 rounded-lg p-3">
+                        @php $oldDeptIds = old('department_ids', []); @endphp
+                        @forelse ($departments as $dept)
+                            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                                <input type="checkbox" name="department_ids[]" value="{{ $dept->id }}"
+                                    {{ in_array($dept->id, $oldDeptIds) ? 'checked' : '' }}
+                                    class="rounded border-gray-300 text-green-700 focus:ring-green-600">
+                                {{ $dept->name }}
+                            </label>
+                        @empty
+                            <p class="text-sm text-gray-400 col-span-2">No departments available.</p>
+                        @endforelse
                     </div>
+                    @error('department_ids')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="flex items-center gap-3 pt-2">
                     <button type="submit" class="px-5 py-2.5 rounded-lg text-white text-sm font-medium hover:opacity-90"

@@ -14,6 +14,10 @@
                 </div>
                 <div><span class="text-gray-400">Department:</span> <span
                         class="font-medium text-gray-800">{{ $finding->department->name }}</span></div>
+                @if ($finding->department->users->isNotEmpty())
+                    <div><span class="text-gray-400">PIC:</span> <span
+                            class="font-medium text-gray-800">{{ $finding->department->users->pluck('name')->join(', ') }}</span></div>
+                @endif
                 <div><span class="text-gray-400">Root Cause:</span> <span
                         class="font-medium text-gray-800">{{ ucfirst($finding->root_cause) }}</span></div>
                 <hr class="border-gray-100">

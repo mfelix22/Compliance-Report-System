@@ -13,7 +13,7 @@ class UserController extends Controller
 {
     public function index(): View
     {
-        $users = User::with('department')->orderBy('name')->paginate(20);
+        $users = User::with('departments')->orderBy('name')->paginate(20);
         return view('admin.users.index', compact('users'));
     }
 
@@ -26,15 +26,20 @@ class UserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name'          => ['required', 'string', 'max:255'],
-            'email'         => ['required', 'email', 'unique:users,email'],
-            'password'      => ['required', 'string', 'min:8', 'confirmed'],
-            'role'          => ['required', 'in:admin,auditor,auditee'],
-            'department_id' => ['nullable', 'exists:departments,id'],
+            'name'             => ['required', 'string', 'max:255'],
+            'email'            => ['required', 'email', 'unique:users,email'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
+            'role'             => ['required', 'in:admin,auditor,auditee'],
+            'department_ids'   => ['nullable', 'array'],
+            'department_ids.*' => ['exists:departments,id'],
         ]);
 
+        $departmentIds = $validated['department_ids'] ?? [];
+        unset($validated['department_ids']);
+
         $validated['password'] = Hash::make($validated['password']);
-        User::create($validated);
+        $user = User::create($validated);
+        $user->departments()->sync($departmentIds);
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User created.');
@@ -43,18 +48,23 @@ class UserController extends Controller
     public function edit(User $user): View
     {
         $departments = Department::orderBy('name')->get();
+        $user->load('departments');
         return view('admin.users.edit', compact('user', 'departments'));
     }
 
     public function update(Request $request, User $user): RedirectResponse
     {
         $validated = $request->validate([
-            'name'          => ['required', 'string', 'max:255'],
-            'email'         => ['required', 'email', 'unique:users,email,' . $user->id],
-            'role'          => ['required', 'in:admin,auditor,auditee'],
-            'department_id' => ['nullable', 'exists:departments,id'],
-            'password'      => ['nullable', 'string', 'min:8', 'confirmed'],
+            'name'             => ['required', 'string', 'max:255'],
+            'email'            => ['required', 'email', 'unique:users,email,' . $user->id],
+            'role'             => ['required', 'in:admin,auditor,auditee'],
+            'department_ids'   => ['nullable', 'array'],
+            'department_ids.*' => ['exists:departments,id'],
+            'password'         => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
+
+        $departmentIds = $validated['department_ids'] ?? [];
+        unset($validated['department_ids']);
 
         if (! empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
@@ -63,6 +73,7 @@ class UserController extends Controller
         }
 
         $user->update($validated);
+        $user->departments()->sync($departmentIds);
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated.');

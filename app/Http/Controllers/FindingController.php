@@ -109,12 +109,12 @@ class FindingController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->isAuditee() && $user->department_id !== $finding->department_id) {
+        if ($user->isAuditee() && ! $user->departments->contains('id', $finding->department_id)) {
             return redirect()->route('dashboard')
                 ->with('error', 'Anda tidak memiliki akses ke temuan ini.');
         }
 
-        $finding->load('inspection', 'department', 'policy', 'policyItem', 'comments.user', 'comments.children.user');
+        $finding->load('inspection', 'department.users', 'policy', 'policyItem', 'comments.user', 'comments.children.user');
         $mentionUsers = \App\Models\User::orderBy('name')->get(['id', 'name']);
         return view('findings.edit', compact('finding', 'mentionUsers'));
     }
@@ -123,7 +123,7 @@ class FindingController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->isAuditee() && $user->department_id !== $finding->department_id) {
+        if ($user->isAuditee() && ! $user->departments->contains('id', $finding->department_id)) {
             return redirect()->route('dashboard')
                 ->with('error', 'Anda tidak memiliki akses ke temuan ini.');
         }
@@ -208,7 +208,7 @@ class FindingController extends Controller
 
     public function verify(Finding $finding): View
     {
-        $finding->load('followUpFinding', 'department', 'policy', 'policyItem', 'inspection');
+        $finding->load('followUpFinding', 'department.users', 'policy', 'policyItem', 'inspection');
 
         // Check if a follow-up finding already exists for this finding
         $existingFollowUp = $finding->followUpFinding;

@@ -383,6 +383,12 @@
                                                     <span>{{ ucfirst($finding->root_cause) }}</span>
                                                     <span class="text-gray-200">·</span>
                                                     <span>{{ $finding->department?->name }}</span>
+                                                    @if ($finding->department && $finding->department->users->isNotEmpty())
+                                                        <span class="text-gray-200">·</span>
+                                                        <span class="inline-flex items-center gap-1 text-gray-400" title="PIC Departemen">
+                                                            &#128100; {{ $finding->department->users->pluck('name')->join(', ') }}
+                                                        </span>
+                                                    @endif
                                                     @if ($finding->due_date)
                                                         <span class="{{ $finding->isOverdue && $finding->status !== 'closed' ? 'text-red-600 font-semibold' : '' }}">
                                                             Due: {{ $finding->due_date->format('d M Y') }}

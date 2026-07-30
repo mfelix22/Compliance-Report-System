@@ -52,17 +52,21 @@ class DatabaseSeeder extends Seeder
         $fbService = Department::where('name', 'FB Service')->first();
 
         $users = [
-            ['name' => 'Admin User',      'email' => 'admin@foodcontrol.com',    'role' => 'admin',   'department_id' => null],
-            ['name' => 'Auditor Utama',   'email' => 'auditor@foodcontrol.com',  'role' => 'auditor', 'department_id' => null],
-            ['name' => 'Auditor Dua',     'email' => 'auditor2@foodcontrol.com', 'role' => 'auditor', 'department_id' => null],
-            ['name' => 'Staff Kitchen',   'email' => 'kitchen@foodcontrol.com',  'role' => 'auditee', 'department_id' => $fbProduct?->id],
-            ['name' => 'Staff FnB',       'email' => 'fnb@foodcontrol.com',      'role' => 'auditee', 'department_id' => $fbService?->id],
+            ['name' => 'Admin User',      'email' => 'admin@foodcontrol.com',    'role' => 'admin',   'department_ids' => []],
+            ['name' => 'Auditor Utama',   'email' => 'auditor@foodcontrol.com',  'role' => 'auditor', 'department_ids' => []],
+            ['name' => 'Auditor Dua',     'email' => 'auditor2@foodcontrol.com', 'role' => 'auditor', 'department_ids' => []],
+            ['name' => 'Staff Kitchen',   'email' => 'kitchen@foodcontrol.com',  'role' => 'auditee', 'department_ids' => array_filter([$fbProduct?->id])],
+            ['name' => 'Staff FnB',       'email' => 'fnb@foodcontrol.com',      'role' => 'auditee', 'department_ids' => array_filter([$fbService?->id, $fbProduct?->id])],
         ];
         foreach ($users as $data) {
-            User::firstOrCreate(
+            $departmentIds = $data['department_ids'];
+            unset($data['department_ids']);
+
+            $user = User::firstOrCreate(
                 ['email' => $data['email']],
                 array_merge($data, ['password' => Hash::make('password')])
             );
+            $user->departments()->sync($departmentIds);
         }
 
         // ── Inspection Policies + Items ───────────────────────────

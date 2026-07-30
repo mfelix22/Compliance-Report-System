@@ -116,7 +116,12 @@
                                     {{ ucfirst($finding->root_cause) }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-gray-600">{{ $finding->department->name ?? '–' }}</td>
+                            <td class="px-4 py-3 text-gray-600">
+                                {{ $finding->department->name ?? '–' }}
+                                @if ($finding->department && $finding->department->users->isNotEmpty())
+                                    <span class="block text-xs text-gray-400">{{ $finding->department->users->pluck('name')->join(', ') }}</span>
+                                @endif
+                            </td>
                             <td class="px-4 py-3 text-center">
                                 <span
                                     class="inline-block px-2 py-0.5 rounded-full font-medium

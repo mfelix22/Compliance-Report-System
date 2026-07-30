@@ -41,7 +41,7 @@
                                 {{ ucfirst($user->role) }}
                             </span>
                         </td>
-                        <td class="px-5 py-3 text-gray-500">{{ $user->department->name ?? '–' }}</td>
+                        <td class="px-5 py-3 text-gray-500">{{ $user->departments->pluck('name')->join(', ') ?: '–' }}</td>
                         <td class="px-5 py-3 text-gray-400 text-xs">{{ $user->created_at->format('d M Y') }}</td>
                         <td class="px-5 py-3 text-right flex items-center justify-end gap-2">
                             <a href="{{ route('admin.users.edit', $user) }}"

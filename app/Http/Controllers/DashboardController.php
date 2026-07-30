@@ -13,10 +13,10 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         if ($user->isAuditee()) {
-            $deptId = $user->department_id;
+            $deptIds = $user->departments->pluck('id');
 
             $myFindings = Finding::with(['inspection.outlet', 'department'])
-                ->where('department_id', $deptId)
+                ->whereIn('department_id', $deptIds)
                 ->orderByRaw("CASE WHEN status='open' THEN 0 ELSE 1 END")
                 ->orderBy('due_date')
                 ->get();

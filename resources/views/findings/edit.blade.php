@@ -39,6 +39,12 @@
                     Department:
                     <span class="font-medium text-gray-700">{{ $finding->department->name }}</span>
                 </span>
+                @if ($finding->department->users->isNotEmpty())
+                    <span class="inline-flex items-center gap-1">
+                        PIC:
+                        <span class="font-medium text-gray-700">{{ $finding->department->users->pluck('name')->join(', ') }}</span>
+                    </span>
+                @endif
                 @if ($finding->due_date)
                     <span class="inline-flex items-center gap-1">
                         Deadline:

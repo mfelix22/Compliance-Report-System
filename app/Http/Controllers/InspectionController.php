@@ -88,7 +88,7 @@ class InspectionController extends Controller
         $inspection->load([
             'outlet',
             'auditors',
-            'findings.department',
+            'findings.department.users',
             'findings.policy',
             'findings.policyItem',
             'findings.parentFinding',

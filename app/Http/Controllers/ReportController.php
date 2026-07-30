@@ -16,7 +16,7 @@ class ReportController extends Controller
         $departments = Department::orderBy('name')->get();
         $outlets     = Outlet::where('is_active', true)->orderBy('name')->get();
 
-        $query = Finding::with(['inspection.outlet', 'department'])->orderBy('created_at', 'desc');
+        $query = Finding::with(['inspection.outlet', 'department.users'])->orderBy('created_at', 'desc');
 
         if ($request->filled('outlet_id')) {
             $query->whereHas('inspection', fn($q) => $q->where('outlet_id', $request->outlet_id));
