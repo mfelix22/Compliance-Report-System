@@ -24,6 +24,7 @@ class Finding extends Model
         'department_id',
         'due_date',
         'photo',
+        'response_photo',
         'keterangan',
         'corrective_action',
         'preventive_action',

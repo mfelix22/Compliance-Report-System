@@ -401,6 +401,9 @@
                                                     @if ($finding->photo)
                                                         <a href="{{ Storage::url($finding->photo) }}" target="_blank" class="text-blue-500 hover:underline">Foto</a>
                                                     @endif
+                                                    @if ($finding->response_photo)
+                                                        <a href="{{ Storage::url($finding->response_photo) }}" target="_blank" class="text-green-600 hover:underline">Foto Respons</a>
+                                                    @endif
                                                     @if (auth()->user()->isAuditee())
                                                         <a href="{{ route('findings.edit', $finding) }}" class="text-blue-600 hover:underline">Isi Respons</a>
                                                     @endif

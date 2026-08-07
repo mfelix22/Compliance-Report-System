@@ -11,6 +11,7 @@ use App\Models\PolicyItem;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class FindingController extends Controller
@@ -142,7 +143,21 @@ class FindingController extends Controller
             $validated = $request->validate([
                 'corrective_action' => ['required', 'string'],
                 'preventive_action' => ['required', 'string'],
+                'response_photo'    => ['nullable', 'image', 'max:5120'],
+            ], [
+                'response_photo.image' => 'File foto bukti tindak lanjut harus berupa gambar.',
+                'response_photo.max'   => 'Ukuran foto bukti tindak lanjut maksimal 5 MB.',
             ]);
+
+            if ($request->hasFile('response_photo')) {
+                if ($finding->response_photo) {
+                    Storage::disk('public')->delete($finding->response_photo);
+                }
+                $validated['response_photo'] = $request->file('response_photo')->store('response_photos', 'public');
+            } else {
+                unset($validated['response_photo']);
+            }
+
             $validated['status']      = 'closed';
             $validated['date_closed'] = now()->toDateString();
             $finding->update($validated);
@@ -206,9 +221,12 @@ class FindingController extends Controller
                 ->with('error', 'Inspeksi sudah ditutup. Temuan tidak dapat dihapus.');
         }
 
-        // Delete the stored photo if it exists
+        // Delete the stored photos if they exist
         if ($finding->photo) {
-            \Storage::disk('public')->delete($finding->photo);
+            Storage::disk('public')->delete($finding->photo);
+        }
+        if ($finding->response_photo) {
+            Storage::disk('public')->delete($finding->response_photo);
         }
         $inspectionId = $finding->inspection_id;
         $finding->delete();

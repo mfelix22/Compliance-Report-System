@@ -93,6 +93,24 @@
                     @enderror
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Response Photo <span
+                            class="text-gray-400 text-xs font-normal">(optional)</span></label>
+                    @if ($finding->response_photo)
+                        <div class="mb-2">
+                            <a href="{{ Storage::url($finding->response_photo) }}" target="_blank">
+                                <img src="{{ Storage::url($finding->response_photo) }}" alt="Response photo"
+                                    class="rounded-lg border border-gray-200 max-h-40 object-cover">
+                            </a>
+                        </div>
+                    @endif
+                    <input type="file" name="response_photo" accept="image/*"
+                        class="w-full text-sm text-gray-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                    @error('response_photo')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <div class="flex items-center gap-3 pt-2">
                     <button type="submit" class="px-5 py-2.5 rounded-lg text-white text-sm font-medium hover:opacity-90"
                         style="background:#1b6840">

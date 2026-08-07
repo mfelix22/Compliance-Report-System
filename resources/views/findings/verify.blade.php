@@ -27,6 +27,16 @@
                         class="text-gray-800">{{ $finding->preventive_action ?? '–' }}</span></div>
                 <div><span class="text-gray-400">Date Closed:</span> <span
                         class="text-gray-800">{{ $finding->date_closed?->format('d M Y') ?? '–' }}</span></div>
+                @if ($finding->response_photo)
+                    <hr class="border-gray-100">
+                    <div>
+                        <span class="text-gray-400">Response Photo:</span>
+                        <a href="{{ Storage::url($finding->response_photo) }}" target="_blank" class="block mt-1">
+                            <img src="{{ Storage::url($finding->response_photo) }}" alt="Response photo"
+                                class="rounded-lg border border-gray-200 max-h-40 object-cover">
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
 
