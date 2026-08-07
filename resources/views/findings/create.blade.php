@@ -163,7 +163,7 @@
                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                     Root Cause <span class="text-red-500">*</span>
                 </label>
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     @foreach (['people' => 'People (Behaviour)', 'facilities' => 'Facilities', 'training' => 'Training', 'others' => 'Others'] as $val => $lbl)
                         <label
                             class="flex items-center gap-2 p-2.5 rounded-lg border border-gray-200
@@ -215,13 +215,13 @@
                     class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400">
             </div>
 
-            <div class="flex gap-3 pt-2">
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
                 <button type="submit"
                     class="flex-1 py-2.5 text-sm font-semibold text-white rounded-lg bg-red-600 hover:bg-red-700">
                     Simpan Temuan NC
                 </button>
                 <a href="{{ route('inspections.show', $inspection) }}"
-                    class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-center">
                     Batal
                 </a>
             </div>

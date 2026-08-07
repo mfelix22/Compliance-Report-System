@@ -27,7 +27,7 @@
                         management complete visibility and accountability.
                     </p>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @foreach ([['🎯', 'Mission-Driven', 'Every decision is focused on protecting food safety'], ['🔬', 'Evidence-Based', 'Findings backed by root cause analysis'], ['🤝', 'Collaborative', 'Auditors and departments working together'], ['📈', 'Continuous Improvement', 'CAPA cycles drive ongoing excellence']] as [$icon, $title, $desc])
                         <div class="rounded-xl p-5" style="background:#e8f5ee">
                             <div class="text-2xl mb-2">{{ $icon }}</div>

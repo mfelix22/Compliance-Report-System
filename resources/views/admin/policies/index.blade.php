@@ -33,7 +33,7 @@
                     class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden group">
 
                     <summary
-                        class="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-gray-50 transition list-none select-none">
+                        class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 cursor-pointer hover:bg-gray-50 transition list-none select-none">
                         <div class="flex items-center gap-3">
                             <span
                                 class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-xs font-bold text-white"

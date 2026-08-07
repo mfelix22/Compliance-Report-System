@@ -50,7 +50,7 @@
             </div>
             <div class="divide-y divide-gray-50">
                 @forelse($outlets as $outlet)
-                    <div class="px-5 py-4 flex items-center justify-between">
+                    <div class="px-5 py-4 flex flex-wrap items-start justify-between gap-3">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
                                 <p class="font-medium text-gray-900 text-sm">{{ $outlet->name }}</p>
@@ -67,7 +67,7 @@
                             @endif
                             <p class="text-xs text-gray-400 mt-0.5">{{ $outlet->inspections_count }} inspection(s)</p>
                         </div>
-                        <div class="flex items-center gap-2 ml-3">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <button
                                 onclick="document.getElementById('edit-outlet-{{ $outlet->id }}').classList.toggle('hidden')"
                                 class="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
@@ -84,7 +84,7 @@
                     {{-- Inline edit --}}
                     <div id="edit-outlet-{{ $outlet->id }}" class="hidden px-5 pb-4 bg-gray-50 border-t border-gray-100">
                         <form method="POST" action="{{ route('admin.outlets.update', $outlet) }}"
-                            class="grid grid-cols-2 gap-3 pt-3">
+                            class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
                             @csrf @method('PUT')
                             <div>
                                 <label class="block text-xs font-medium text-gray-600 mb-1">Name</label>
@@ -101,7 +101,7 @@
                                 <input type="text" name="description" value="{{ $outlet->description }}"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none">
                             </div>
-                            <div class="col-span-2 flex items-center justify-between">
+                            <div class="col-span-2 flex flex-wrap items-center justify-between gap-3">
                                 <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                                     <input type="checkbox" name="is_active" value="1"
                                         {{ $outlet->is_active ? 'checked' : '' }} class="accent-green-700">

@@ -38,7 +38,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Verification Result <span
                             class="text-red-400">*</span></label>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <label
                             class="flex items-center gap-3 border-2 border-gray-200 rounded-xl px-4 py-3 cursor-pointer hover:border-green-400 transition has-[:checked]:border-green-600 has-[:checked]:bg-green-50">
                             <input type="radio" name="verification_status" value="complied"
@@ -65,7 +65,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Verification Date</label>
                     <input type="date" name="verification_date"
                         value="{{ old('verification_date', $finding->verification_date?->format('Y-m-d') ?? date('Y-m-d')) }}"
-                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none max-w-xs">
+                        class="w-full sm:max-w-xs px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none">
                 </div>
 
                 <div>
@@ -98,13 +98,13 @@
                     @endif
                 </div>
 
-                <div class="flex items-center gap-3 pt-2">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
                     <button type="submit" class="px-5 py-2.5 rounded-lg text-white text-sm font-medium hover:opacity-90"
                         style="background:#1b6840">
                         Submit Verification
                     </button>
                     <a href="{{ route('inspections.show', $finding->inspection_id) }}"
-                        class="text-sm text-gray-500 hover:text-gray-700">Cancel</a>
+                        class="px-5 py-2.5 text-center sm:text-left text-sm text-gray-500 hover:text-gray-700">Cancel</a>
                 </div>
             </form>
         </div>

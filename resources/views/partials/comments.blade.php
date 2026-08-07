@@ -44,7 +44,7 @@
                             {{ substr($comment->user->name, 0, 1) }}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 mb-1">
+                            <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-1">
                                 <span class="text-sm font-medium text-gray-800">{{ $comment->user->name }}</span>
                                 <span class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
                                 @if ($comment->finding_id)
@@ -62,7 +62,7 @@
                                                 {{ substr($reply->user->name, 0, 1) }}
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <div class="flex items-center gap-2 mb-0.5">
+                                                <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-0.5">
                                                     <span class="text-xs font-medium text-gray-700">{{ $reply->user->name }}</span>
                                                     <span class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</span>
                                                 </div>

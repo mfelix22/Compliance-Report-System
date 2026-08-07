@@ -2,8 +2,8 @@
 @section('title', 'Login')
 
 @section('content')
-    <div class="w-full max-w-md">
-        <div class="bg-white rounded-2xl shadow-lg p-8">
+    <div class="w-full max-w-md px-4 sm:px-0">
+        <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
             {{-- Header --}}
             <div class="flex items-center gap-2 mb-8 lg:hidden">
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#1b6840">
@@ -12,7 +12,7 @@
                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                 </div>
-                <span class="text-xl font-bold" style="color:#1b6840">Compliance <span style="color:#f4a823">Reporting
+                <span class="text-xl font-bold min-w-0" style="color:#1b6840">Compliance <span style="color:#f4a823">Reporting
                         System</span></span>
             </div>
 
@@ -43,7 +43,7 @@
                         placeholder="••••••••">
                 </div>
 
-                <div class="flex items-center justify-between text-sm">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" name="remember" class="rounded">
                         <span class="text-gray-600">Remember me</span>
@@ -64,13 +64,13 @@
                     @foreach ([['Admin', 'admin@foodcontrol.com', 'Admin'], ['Auditor', 'auditor@foodcontrol.com', 'Auditor'], ['Auditee', 'kitchen@foodcontrol.com', 'FB Product'], ['Auditee', 'fnb@foodcontrol.com', 'FB Service']] as [$role, $email, $dept])
                         <button type="button"
                             onclick="document.getElementById('email').value='{{ $email }}'; document.getElementById('password').value='password';"
-                            class="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white border border-gray-200 hover:border-green-400 hover:bg-green-50 transition-colors text-left">
-                            <span class="font-medium text-gray-700">{{ $email }}</span>
+                            class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-white border border-gray-200 hover:border-green-400 hover:bg-green-50 transition-colors text-left">
+                            <span class="font-medium text-gray-700 min-w-0 truncate">{{ $email }}</span>
                             <span
-                                class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium
-                            @if ($role === 'Admin') bg-purple-100 text-purple-700
-                            @elseif($role === 'Auditor') bg-blue-100 text-blue-700
-                            @else bg-amber-100 text-amber-700 @endif">
+                                class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium flex-shrink-0
+                                @if ($role === 'Admin') bg-purple-100 text-purple-700
+                                @elseif($role === 'Auditor') bg-blue-100 text-blue-700
+                                @else bg-amber-100 text-amber-700 @endif">
                                 {{ $role }}{{ $dept !== $role ? ' · ' . $dept : '' }}
                             </span>
                         </button>

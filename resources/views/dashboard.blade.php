@@ -169,7 +169,7 @@
 
         {{-- Overdue Alert --}}
         @if ($stats['overdue_findings'] > 0)
-            <div class="flex items-center justify-between gap-4 bg-red-50 border border-red-200 rounded-xl px-5 py-3 mb-5">
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-3 mb-5">
                 <div class="flex items-center gap-3">
                     <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -237,7 +237,7 @@
 
             {{-- Recent Findings --}}
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div class="px-5 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-2">
                     <h3 class="font-semibold text-gray-900">Recent Findings</h3>
                     <a href="{{ route('reports.index') }}" class="text-xs font-medium hover:underline"
                         style="color:#1b6840">View All</a>
@@ -275,7 +275,7 @@
 
             {{-- Recent Inspections --}}
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div class="px-5 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-2">
                     <h3 class="font-semibold text-gray-900">Recent Inspections</h3>
                     <a href="{{ route('inspections.index') }}" class="text-xs font-medium hover:underline"
                         style="color:#1b6840">View All</a>

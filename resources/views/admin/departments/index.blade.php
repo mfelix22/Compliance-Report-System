@@ -46,7 +46,7 @@
             </div>
             <div class="divide-y divide-gray-50">
                 @forelse($departments as $dept)
-                    <div class="px-5 py-4 flex items-center justify-between">
+                    <div class="px-5 py-4 flex flex-wrap items-start justify-between gap-3">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
                                 <p class="font-medium text-gray-900 text-sm">{{ $dept->name }}</p>
@@ -61,7 +61,7 @@
                             <p class="text-xs text-gray-400 mt-0.5">{{ $dept->findings_count }} findings ·
                                 {{ $dept->users_count }} users</p>
                         </div>
-                        <div class="flex items-center gap-2 ml-3">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <button
                                 onclick="document.getElementById('edit-{{ $dept->id }}').classList.toggle('hidden')"
                                 class="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
@@ -78,7 +78,7 @@
                     {{-- Inline edit form --}}
                     <div id="edit-{{ $dept->id }}" class="hidden px-5 pb-4">
                         <form method="POST" action="{{ route('admin.departments.update', $dept) }}"
-                            class="grid grid-cols-3 gap-2">
+                            class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             @csrf @method('PUT')
                             <input type="text" name="name" value="{{ $dept->name }}" required
                                 class="px-3 py-2 border border-gray-300 rounded-lg text-sm">

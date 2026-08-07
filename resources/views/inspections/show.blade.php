@@ -211,7 +211,7 @@
 
         {{-- Audit Checklist Table --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-200 flex items-center justify-between">
+            <div class="px-5 py-3 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
                 <h2 class="text-base font-semibold text-gray-800">Checklist Audit</h2>
                 <span class="text-xs text-gray-400">Klik C / NC / N/A pada setiap kategori</span>
             </div>
@@ -439,7 +439,7 @@
                                         <input type="hidden" name="inspection_policy_id" value="{{ $policy->id }}">
 
                                         {{-- Header --}}
-                                        <div class="flex items-center justify-between">
+                                        <div class="flex flex-wrap items-start justify-between gap-3">
                                             <div>
                                                 <h4 class="text-sm font-bold" style="color:#b91c1c">Temuan Non-Compliance
                                                 </h4>

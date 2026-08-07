@@ -18,7 +18,7 @@
     {{-- Filters --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-6">
         <form method="GET" action="{{ route('reports.index') }}" class="space-y-3">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                 <select name="outlet_id" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
                     <option value="">All Outlets</option>
                     @foreach ($outlets as $outlet)
@@ -48,7 +48,7 @@
                         Not Complied</option>
                 </select>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 <select name="root_cause" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
                     <option value="">All Root Causes</option>
                     @foreach (['people' => 'People', 'facilities' => 'Facilities', 'training' => 'Training', 'others' => 'Others'] as $val => $label)
@@ -61,8 +61,8 @@
                 <input type="date" name="date_to" value="{{ request('date_to') }}"
                     class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
             </div>
-            <div class="flex items-center justify-between">
-                <div class="flex gap-2">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex gap-2 flex-wrap">
                     <button type="submit" class="px-5 py-2 rounded-lg text-white text-sm font-medium hover:opacity-90"
                         style="background:#1b6840">Filter</button>
                     @if (request()->hasAny(['outlet_id', 'department_id', 'status', 'verification_status', 'root_cause', 'date_from', 'date_to']))
@@ -80,7 +80,9 @@
 
     {{-- Findings Table --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
+
+        {{-- Desktop table --}}
+        <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full text-xs">
                 <thead>
                     <tr class="border-b border-gray-100" style="background:#e8f5ee">
@@ -157,6 +159,49 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        {{-- Mobile cards --}}
+        <div class="md:hidden divide-y divide-gray-100">
+            @forelse($findings as $finding)
+                <a href="{{ route('inspections.show', $finding->inspection_id) }}" class="block p-4 hover:bg-gray-50 transition">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-medium text-gray-800 line-clamp-2">{{ $finding->finding }}</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <span class="font-mono text-gray-600">{{ $finding->inspection->reference_no ?? '–' }}</span>
+                                · {{ $finding->inspection->inspection_date?->format('d M Y') }}
+                            </p>
+                        </div>
+                        <span
+                            class="inline-block text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap
+                        {{ $finding->status === 'open' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700' }}">
+                            {{ ucfirst($finding->status) }}
+                        </span>
+                    </div>
+                    <div class="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                        <span
+                            class="inline-block px-2 py-0.5 rounded-full font-medium
+                        @if ($finding->root_cause === 'people') bg-purple-100 text-purple-700
+                        @elseif($finding->root_cause === 'facilities') bg-blue-100 text-blue-700
+                        @elseif($finding->root_cause === 'training') bg-orange-100 text-orange-700
+                        @else bg-gray-100 text-gray-600 @endif">
+                            {{ ucfirst($finding->root_cause) }}
+                        </span>
+                        <span class="text-gray-500">{{ $finding->department->name ?? '–' }}</span>
+                        @if ($finding->verification_status === 'complied')
+                            <span class="text-green-700 font-medium">Complied</span>
+                        @elseif($finding->verification_status === 'not_complied')
+                            <span class="text-red-700 font-medium">Not Complied</span>
+                        @else
+                            <span class="text-gray-400">Pending</span>
+                        @endif
+                        <span class="text-gray-400">{{ $finding->verification_date?->format('d M Y') ?? '–' }}</span>
+                    </div>
+                </a>
+            @empty
+                <div class="px-5 py-12 text-center text-sm text-gray-400">No findings match your filters.</div>
+            @endforelse
         </div>
 
         @if ($findings->hasPages())
