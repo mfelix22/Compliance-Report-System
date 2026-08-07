@@ -114,6 +114,11 @@ class FindingController extends Controller
                 ->with('error', 'Anda tidak memiliki akses ke temuan ini.');
         }
 
+        if ($finding->inspection->status === 'closed') {
+            return redirect()->route('inspections.show', $finding->inspection)
+                ->with('error', 'Inspeksi sudah ditutup. Temuan tidak dapat diubah.');
+        }
+
         $finding->load('inspection', 'department.users', 'policy', 'policyItem', 'comments.user', 'comments.children.user');
         $mentionUsers = \App\Models\User::orderBy('name')->get(['id', 'name']);
         return view('findings.edit', compact('finding', 'mentionUsers'));
@@ -126,6 +131,11 @@ class FindingController extends Controller
         if ($user->isAuditee() && ! $user->departments->contains('id', $finding->department_id)) {
             return redirect()->route('dashboard')
                 ->with('error', 'Anda tidak memiliki akses ke temuan ini.');
+        }
+
+        if ($finding->inspection->status === 'closed') {
+            return redirect()->route('inspections.show', $finding->inspection)
+                ->with('error', 'Inspeksi sudah ditutup. Temuan tidak dapat diubah.');
         }
 
         if ($user->isAuditee() || $user->isAdmin()) {
