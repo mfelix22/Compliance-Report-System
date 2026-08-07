@@ -6,9 +6,9 @@
     <div class="space-y-6">
 
         {{-- Header --}}
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">{{ $inspection->title }}</h1>
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-900">{{ $inspection->title }}</h1>
                 <p class="text-sm text-gray-500 mt-1">
                     Ref: {{ $inspection->reference_no }} &bull;
                     {{ $inspection->outlet->name }} &bull;
@@ -18,7 +18,7 @@
                     @endif
                 </p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
                 @if (in_array(auth()->user()->role, ['admin', 'auditor']))
                     @if ($inspection->status !== 'closed')
                         <form method="POST" action="{{ route('inspections.close', $inspection) }}">
@@ -216,7 +216,8 @@
                 <span class="text-xs text-gray-400">Klik C / NC / N/A pada setiap kategori</span>
             </div>
 
-            <table class="w-full text-sm">
+            <div class="overflow-x-auto">
+            <table class="w-full text-sm" style="min-width:900px">
                 <thead
                     class="bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-200">
                     <tr>
@@ -672,6 +673,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         </div>
 
         @include('partials.comments', [

@@ -12,10 +12,15 @@
 
     <div class="flex h-screen overflow-hidden">
 
+        {{-- ── Sidebar Overlay (mobile) ── --}}
+        <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/50 z-30 md:hidden"></div>
+
         {{-- ── Sidebar ── --}}
-        <aside class="w-64 flex-shrink-0 flex flex-col" style="background:#0f2e1c">
+        <aside id="sidebar"
+            class="w-64 flex-shrink-0 flex flex-col fixed inset-y-0 left-0 z-40 -translate-x-full transition-transform duration-200 md:static md:translate-x-0"
+            style="background:#0f2e1c">
             {{-- Logo --}}
-            <div class="p-5 border-b border-green-900">
+            <div class="p-5 border-b border-green-900 flex items-center justify-between">
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#1b6840">
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,6 +30,11 @@
                     </div>
                     <span class="font-bold text-white text-lg">Compliance<span style="color:#f4a823"> RS</span></span>
                 </a>
+                <button id="sidebar-close" type="button" class="md:hidden text-gray-400 hover:text-white p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
 
             {{-- User info --}}
@@ -152,38 +162,70 @@
         </aside>
 
         {{-- ── Main Area ── --}}
-        <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="flex-1 flex flex-col overflow-hidden w-full min-w-0">
             {{-- Top bar --}}
-            <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
-                <div>
-                    <h1 class="text-xl font-bold text-gray-900">@yield('page-title', 'Dashboard')</h1>
-                    @hasSection('page-subtitle')
-                        <p class="text-sm text-gray-500 mt-0.5">@yield('page-subtitle')</p>
-                    @endif
+            <header
+                class="bg-white border-b border-gray-200 px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <button id="sidebar-open" type="button"
+                        class="md:hidden text-gray-500 hover:text-gray-700 p-1 flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <div class="min-w-0">
+                        <h1 class="text-lg md:text-xl font-bold text-gray-900 truncate">@yield('page-title', 'Dashboard')</h1>
+                        @hasSection('page-subtitle')
+                            <p class="text-xs md:text-sm text-gray-500 mt-0.5 truncate">@yield('page-subtitle')</p>
+                        @endif
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 flex-wrap">
                     @yield('header-actions')
                 </div>
             </header>
 
             {{-- Flash Messages --}}
             @if (session('success'))
-                <div class="mx-6 mt-4 px-4 py-3 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm">
+                <div class="mx-4 md:mx-6 mt-4 px-4 py-3 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm">
                     ✓ {{ session('success') }}
                 </div>
             @endif
             @if (session('error'))
-                <div class="mx-6 mt-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">
+                <div class="mx-4 md:mx-6 mt-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">
                     ✗ {{ session('error') }}
                 </div>
             @endif
 
             {{-- Content --}}
-            <main class="flex-1 overflow-y-auto p-6">
+            <main class="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6">
                 @yield('content')
             </main>
         </div>
     </div>
+
+    <script>
+        (function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const openBtn = document.getElementById('sidebar-open');
+            const closeBtn = document.getElementById('sidebar-close');
+
+            function openSidebar() {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+
+            openBtn?.addEventListener('click', openSidebar);
+            closeBtn?.addEventListener('click', closeSidebar);
+            overlay?.addEventListener('click', closeSidebar);
+        })();
+    </script>
 
     @stack('scripts')
 </body>

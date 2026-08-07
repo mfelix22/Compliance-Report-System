@@ -57,6 +57,7 @@
     </form>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
         <table class="min-w-full text-sm">
             <thead>
                 <tr class="border-b border-gray-100" style="background:#e8f5ee">
@@ -114,6 +115,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
 
         @if ($inspections->hasPages())
             <div class="px-5 py-4 border-t border-gray-100">
