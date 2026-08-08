@@ -69,7 +69,7 @@
         @endif
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 class="font-semibold text-gray-900 mb-5">Your Response</h3>
-            <form method="POST" action="{{ route('findings.update', $finding) }}" class="space-y-5">
+            <form method="POST" action="{{ route('findings.update', $finding) }}" enctype="multipart/form-data" class="space-y-5">
                 @csrf @method('PUT')
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Corrective Action <span
